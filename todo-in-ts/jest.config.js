@@ -7,5 +7,5 @@ module.exports = {
     // This is necessary for Next.js versions 9 and up
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jest-environment-jsdom',
 };
