@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TodoList } from '../components/TodoList';
 import { Todo } from '../types/types'; // Assuming you have defined this type
+import { nanoid } from 'nanoid';
 
 const Home: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -24,7 +25,7 @@ const Home: React.FC = () => {
   const addTodo = () => {
     if (!inputValue.trim()) return;
     const newTodo: Todo = {
-      id: Math.random(),
+      id: nanoid(),
       text: inputValue,
       completed: false,
     };
@@ -32,7 +33,7 @@ const Home: React.FC = () => {
     setInputValue('');
   }
 
-  const deleteTodo = (id: number) => {
+  const deleteTodo = (id: string) => {
     setTodos(todos.filter(todo => todo.id !== id));
   };
 
