@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TodoList } from '../components/TodoList';
 import { Todo } from '../types/types'; // Assuming you have defined this type
 
 const Home: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [inputValue, setInputValue] = useState(''); 
 
+  // On component mount, check if there's anything in localStorage
+  useEffect(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('todos') : null;
+    const initialTodos = saved ? JSON.parse(saved) : [];
+    setTodos(initialTodos);
+  }, []);
+
+  // Anytime todos change, update localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
+  }, [todos]);
+
+  const [inputValue, setInputValue] = useState(''); 
 
   const addTodo = () => {
     if (!inputValue.trim()) return;
