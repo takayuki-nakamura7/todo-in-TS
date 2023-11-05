@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TodoList } from '../components/TodoList';
-import { Todo } from '../types/types'; // Assuming you have defined this type
+import { Todo } from '../types/types'; 
 import { nanoid } from 'nanoid';
 
 const Home: React.FC = () => {
@@ -37,7 +37,24 @@ const Home: React.FC = () => {
     setTodos(todos.filter(todo => todo.id !== id));
   };
 
-  // ... other handlers like addTodo, editTodo, etc.
+  const editTodo = (id: string, newText: string) => {
+    setTodos(todos.map(todo => {
+      if (todo.id === id) {
+        return { ...todo, text: newText };
+      }
+      return todo;
+    }));
+  };
+
+  const toggleComplete = (id: string) => {
+    setTodos(todos.map(todo => {
+      if (todo.id === id) {
+        return { ...todo, completed: !todo.completed };
+      }
+      return todo;
+    }));
+  }
+
 
   return (
     <div>
@@ -49,7 +66,12 @@ const Home: React.FC = () => {
         placeholder="Add a new todo..."
       />
       <button onClick={addTodo}>Add Todo</button>
-      <TodoList todos={todos} deleteTodo={deleteTodo} />
+      <TodoList
+        todos={todos}
+        deleteTodo={deleteTodo}
+        editTodo={editTodo}
+        toggleComplete={toggleComplete}
+      />
       {/* You will also need to render components or buttons to add/edit todos */}
     </div>
   );
