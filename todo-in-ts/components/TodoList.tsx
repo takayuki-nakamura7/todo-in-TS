@@ -5,7 +5,7 @@ interface TodoListProps {
   todos: Todo[];
   deleteTodo: (id: string) => void;
   editTodo: (id: string, newText: string) => void;
-  toggleComplete: (id: nstring) => void;
+  toggleComplete: (id: string) => void;
 }
 
 export const TodoList: React.FC<TodoListProps> = ({ todos, deleteTodo, editTodo, toggleComplete }) => {
