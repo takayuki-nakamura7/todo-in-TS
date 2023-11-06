@@ -1,4 +1,4 @@
-# Todo-in-TS
+# About
 TODO list application built with Next.js for leaning purposes.
 
 # Hosted on Vercel
