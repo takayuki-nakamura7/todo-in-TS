@@ -49,9 +49,15 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         </>
       ) : (
         <>
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={handleToggle}
+            // Adding an aria-label for better accessibility
+            aria-label={`Mark ${todo.text} as completed`}
+          />
           <span
             style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
-            onClick={handleToggle}
           >
             {todo.text}
           </span>
