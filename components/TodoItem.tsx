@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Todo } from '../types/types';
 
 interface TodoItemProps {
@@ -14,8 +14,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   editTodo,
   toggleComplete,
 }) => {
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [editText, setEditText] = React.useState(todo.text);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(todo.text);
 
   const handleEdit = () => {
     setIsEditing(true);
