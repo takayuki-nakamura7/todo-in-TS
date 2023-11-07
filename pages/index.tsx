@@ -3,9 +3,12 @@ import { TodoList } from '../components/TodoList';
 import { Todo } from '../types/types'; 
 import { nanoid } from 'nanoid';
 
+type FilterType = 'all' | 'completed' | 'active';
+
 const Home: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [inputValue, setInputValue] = useState(''); 
+  const [filter, setFilter] = useState<FilterType>('all');
 
   // Using useCallback to ensure these functions are memoized and not re-created on each render
   const addTodo = useCallback(() => {
@@ -31,6 +34,12 @@ const Home: React.FC = () => {
     setTodos(todos => todos.map(todo => todo.id === id ? { ...todo, completed: !todo.completed } : todo));
   }, []);
 
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'completed') return todo.completed;
+    if (filter === 'active') return !todo.completed;
+    return true;
+  });
+
   // Moved the localStorage side effects into a custom hook for separation of concerns
   useLocalStorageTodos(todos, setTodos);
 
@@ -45,12 +54,16 @@ const Home: React.FC = () => {
       />
       <button onClick={addTodo}>Add Todo</button>
       <TodoList
-        todos={todos}
+        todos={filteredTodos}
         deleteTodo={deleteTodo}
         editTodo={editTodo}
         toggleComplete={toggleComplete}
       />
-      {/* Any additional UI for adding/editing todos can be rendered here */}
+      <div>
+        <button onClick={() => setFilter('all')}>All</button>
+        <button onClick={() => setFilter('completed')}>Completed</button>
+        <button onClick={() => setFilter('active')}>Active</button>
+      </div>
     </div>
   );
 };
