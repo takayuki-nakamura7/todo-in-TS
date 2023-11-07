@@ -1,60 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TodoList } from '../components/TodoList';
 import { Todo } from '../types/types'; 
 import { nanoid } from 'nanoid';
 
 const Home: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-
-  // On component mount, check if there's anything in localStorage
-  useEffect(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('todos') : null;
-    const initialTodos = saved ? JSON.parse(saved) : [];
-    setTodos(initialTodos);
-  }, []);
-
-  // Anytime todos change, update localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('todos', JSON.stringify(todos));
-    }
-  }, [todos]);
-
   const [inputValue, setInputValue] = useState(''); 
 
-  const addTodo = () => {
+  // Using useCallback to ensure these functions are memoized and not re-created on each render
+  const addTodo = useCallback(() => {
     if (!inputValue.trim()) return;
     const newTodo: Todo = {
       id: nanoid(),
       text: inputValue,
       completed: false,
     };
-    setTodos([...todos, newTodo]);
+    setTodos(todos => [...todos, newTodo]);
     setInputValue('');
-  }
+  }, [inputValue]);
 
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
+  const deleteTodo = useCallback((id: string) => {
+    setTodos(todos => todos.filter(todo => todo.id !== id));
+  }, []);
 
-  const editTodo = (id: string, newText: string) => {
-    setTodos(todos.map(todo => {
-      if (todo.id === id) {
-        return { ...todo, text: newText };
-      }
-      return todo;
-    }));
-  };
+  const editTodo = useCallback((id: string, newText: string) => {
+    setTodos(todos => todos.map(todo => todo.id === id ? { ...todo, text: newText } : todo));
+  }, []);
 
-  const toggleComplete = (id: string) => {
-    setTodos(todos.map(todo => {
-      if (todo.id === id) {
-        return { ...todo, completed: !todo.completed };
-      }
-      return todo;
-    }));
-  }
+  const toggleComplete = useCallback((id: string) => {
+    setTodos(todos => todos.map(todo => todo.id === id ? { ...todo, completed: !todo.completed } : todo));
+  }, []);
 
+  // Moved the localStorage side effects into a custom hook for separation of concerns
+  useLocalStorageTodos(todos, setTodos);
 
   return (
     <div>
@@ -72,9 +50,22 @@ const Home: React.FC = () => {
         editTodo={editTodo}
         toggleComplete={toggleComplete}
       />
-      {/* You will also need to render components or buttons to add/edit todos */}
+      {/* Any additional UI for adding/editing todos can be rendered here */}
     </div>
   );
 };
 
 export default Home;
+
+// Custom hook to handle localStorage
+function useLocalStorageTodos(todos: Todo[], setTodos: React.Dispatch<React.SetStateAction<Todo[]>>) {
+  useEffect(() => {
+    const saved = localStorage.getItem('todos');
+    const initialTodos = saved ? JSON.parse(saved) : [];
+    setTodos(initialTodos);
+  }, [setTodos]);
+
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
+}
