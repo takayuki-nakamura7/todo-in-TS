@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Todo } from '../types/types';
 
 interface TodoItemProps {
@@ -17,23 +17,17 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  }
-
-  const handleCancel = () => {
-    setEditText(todo.text);
-    setIsEditing(false);
-  }
+  // Reset editText when the todo text changes
+  useEffect(() => {
+    if (!isEditing) {
+      setEditText(todo.text);
+    }
+  }, [todo.text, isEditing]);
 
   const handleSave = () => {
     editTodo(todo.id, editText);
     setIsEditing(false);
-  }
-
-  const handleToggle = () => {
-    toggleComplete(todo.id);
-  }
+  };
 
   return (
     <div>
@@ -45,23 +39,20 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             onChange={(e) => setEditText(e.target.value)}
           />
           <button onClick={handleSave}>Save</button>
-          <button onClick={handleCancel}>Cancel</button>
+          <button onClick={() => setIsEditing(false)}>Cancel</button>
         </>
       ) : (
         <>
           <input
             type="checkbox"
             checked={todo.completed}
-            onChange={handleToggle}
-            // Adding an aria-label for better accessibility
+            onChange={() => toggleComplete(todo.id)}
             aria-label={`Mark ${todo.text} as completed`}
           />
-          <span
-            style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
-          >
+          <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
             {todo.text}
           </span>
-          <button onClick={handleEdit}>Edit</button>
+          <button onClick={() => setIsEditing(true)}>Edit</button>
           <button onClick={() => deleteTodo(todo.id)}>Delete</button>
         </>
       )}
