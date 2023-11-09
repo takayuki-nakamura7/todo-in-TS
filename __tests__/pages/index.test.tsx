@@ -22,14 +22,12 @@ describe('Home', () => {
   it('adds a new todo when add button is clicked', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(<Home />);
     
-    // Add a todo
     const input = getByPlaceholderText('Add a new todo...');
     fireEvent.change(input, { target: { value: 'New Todo' } });
     fireEvent.click(getByText('Add Todo'));
 
-    // Check that the todo is added
     expect(queryByText('New Todo')).toBeInTheDocument();
   });
 
-  // ... other tests for edit, toggle, filter, etc.
+  // ... othekkkkkkr tests for edit, toggle, filter, etc.
 });
