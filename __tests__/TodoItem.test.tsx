@@ -63,7 +63,6 @@ describe('TodoItem', () => {
   
     userEvent.click(screen.getByText('Delete'));
   
-    // If there might be some async behavior, we can wait for the mock function to be called.
     await waitFor(() => {
       expect(mockDeleteTodo).toHaveBeenCalledWith(mockTodo.id);
     });
