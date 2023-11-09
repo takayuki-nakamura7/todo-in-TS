@@ -1,11 +1,18 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Home from '../../pages/index';
 
 const setItemMock = jest.fn();
 const getItemMock = jest.fn();
-jest.mock('nanoid', () => ({ nanoid: () => 'mocked-id' }));
+// A variable prefixed with `mock` to comply with Jest's variable naming conventions
+let mockIdCounter = 0;
+
+jest.mock('nanoid', () => ({
+  nanoid: () => `unique-id-${mockIdCounter++}`,
+}));
+
+
 
 beforeAll(() => {
   global.localStorage = {
@@ -29,5 +36,30 @@ describe('Home', () => {
     expect(queryByText('New Todo')).toBeInTheDocument();
   });
 
-  // ... othekkkkkkr tests for edit, toggle, filter, etc.
+  it('deletes a todo when delete button is clicked', async () => {
+    const { getByPlaceholderText, getByText, queryByText, getAllByText } = render(<Home />);
+    
+    // Add first todo
+    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'First Todo' } });
+    fireEvent.click(getByText('Add Todo'));
+  
+    // Add second todo
+    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'Second Todo' } });
+    fireEvent.click(getByText('Add Todo'));
+  
+    // Check both todos are added
+    expect(getByText('First Todo')).toBeInTheDocument();
+    expect(getByText('Second Todo')).toBeInTheDocument();
+  
+    // Get all delete buttons, assuming the last one is for the 'Second Todo'
+    const deleteButtons = getAllByText('Delete');
+    fireEvent.click(deleteButtons[deleteButtons.length - 1]);
+  
+    await waitFor(() => {
+      // Now we expect 'Second Todo' to be gone, 'First Todo' should still exist
+      expect(queryByText('Second Todo')).not.toBeInTheDocument();
+      expect(queryByText('First Todo')).toBeInTheDocument();
+    });
+  });
+  
 });
