@@ -1,19 +1,32 @@
+// TodoItem.test.tsx
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { TodoItem } from '../components/TodoItem';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import { TodoItem } from '../components/TodoItem';
 
 describe('TodoItem', () => {
+  const mockTodo = {
+    id: '1',
+    text: 'Test Todo',
+    completed: false,
+  };
+
+  const mockToggleComplete = jest.fn();
   const mockDeleteTodo = jest.fn();
   const mockEditTodo = jest.fn();
-  const mockToggleComplete = jest.fn();
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
 
   it('renders the todo item correctly', () => {
     render(
       <TodoItem
-        todo={{ id: '1', text: 'Test Todo', completed: false }}
+        todo={mockTodo}
+        toggleComplete={mockToggleComplete}
         deleteTodo={mockDeleteTodo}
         editTodo={mockEditTodo}
-        toggleComplete={mockToggleComplete}
       />
     );
 
@@ -23,19 +36,37 @@ describe('TodoItem', () => {
   it('triggers completion toggle when checkbox is clicked', async () => {
     render(
       <TodoItem
-        todo={{ id: '1', text: 'Test Todo', completed: false }}
+        todo={mockTodo}
+        toggleComplete={mockToggleComplete}
         deleteTodo={mockDeleteTodo}
         editTodo={mockEditTodo}
-        toggleComplete={mockToggleComplete}
       />
     );
 
     const checkbox = screen.getByRole('checkbox');
     userEvent.click(checkbox);
 
-    // Wait for the mockToggleComplete function to be called after the click event
-    await waitFor(() => expect(mockToggleComplete).toHaveBeenCalledWith('1'));
+    await waitFor(() => {
+      expect(mockToggleComplete).toHaveBeenCalledWith(mockTodo.id);
+    });
   });
 
-  // Add more tests here for delete and edit actions
+  it('triggers deleteTodo when delete button is clicked', async () => {
+    render(
+      <TodoItem
+        todo={mockTodo}
+        toggleComplete={mockToggleComplete}
+        deleteTodo={mockDeleteTodo}
+        editTodo={mockEditTodo}
+      />
+    );
+  
+    userEvent.click(screen.getByText('Delete'));
+  
+    // If there might be some async behavior, we can wait for the mock function to be called.
+    await waitFor(() => {
+      expect(mockDeleteTodo).toHaveBeenCalledWith(mockTodo.id);
+    });
+  });
+  
 });
