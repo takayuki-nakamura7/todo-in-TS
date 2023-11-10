@@ -96,4 +96,34 @@ describe('Home', () => {
     expect(completedTodo).toHaveStyle('text-decoration: line-through');
   });
   
+  it('filters todos correctly', async () => {
+    const { getByPlaceholderText, getByText, queryByText, getAllByRole } = render(<Home />);
+    
+    // Add not-completed todo
+    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'Active Todo' } });
+    fireEvent.click(getByText('Add Todo'));
+  
+    // Add completed todo
+    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'Completed Todo' } });
+    fireEvent.click(getByText('Add Todo'));
+    
+    // Assuming the checkbox to mark a todo as complete is right before the todo text
+    const checkboxes = getAllByRole('checkbox');
+    fireEvent.click(checkboxes[1]); // Mark the second todo as completed
+  
+    // Apply 'All' filter
+    fireEvent.click(getByText('All'));
+    expect(queryByText('Active Todo')).toBeInTheDocument();
+    expect(queryByText('Completed Todo')).toBeInTheDocument();
+  
+    // Apply 'Completed' filter
+    fireEvent.click(getByText('Completed'));
+    expect(queryByText('Active Todo')).not.toBeInTheDocument();
+    expect(queryByText('Completed Todo')).toBeInTheDocument();
+  
+    // Apply 'Active' filter
+    fireEvent.click(getByText('Active'));
+    expect(queryByText('Active Todo')).toBeInTheDocument();
+    expect(queryByText('Completed Todo')).not.toBeInTheDocument();
+  });
 });
