@@ -24,6 +24,12 @@ beforeAll(() => {
     removeItem: jest.fn()
   } as unknown as Storage;
 });
+beforeEach(() => {
+  // Reset local storage
+  localStorage.clear();
+  // Reset any other global state
+});
+
 
 describe('Home', () => {
   it('adds a new todo when add button is clicked', () => {
@@ -37,14 +43,20 @@ describe('Home', () => {
   });
 
   it('deletes a todo when delete button is clicked', async () => {
-    const { getByPlaceholderText, getByText, queryByText, getAllByText } = render(<Home />);
+    const { getByPlaceholderText, getByText, queryByText } = render(<Home />);
     
-    // Add first todo
-    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'First Todo' } });
+    // Add a todo
+    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'Todo to Delete' } });
     fireEvent.click(getByText('Add Todo'));
   
-    // Add second todo
-    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'Second Todo' } });
+    // Delete the todo
+    fireEvent.click(getByText('Delete'));
+  
+    // Check the todo is deleted
+    await waitFor(() => {
+      expect(queryByText('Todo to Delete')).not.toBeInTheDocument();
+    });
+  });
     fireEvent.click(getByText('Add Todo'));
   
     // Check both todos are added
