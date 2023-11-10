@@ -77,5 +77,23 @@ describe('Home', () => {
       expect(queryByText('Edited Todo')).toBeInTheDocument();
       expect(queryByText('Todo to Edit')).not.toBeInTheDocument();
     });
-  });    
+  });
+
+  it('toggles a todo completion status', async () => {
+    const { getByPlaceholderText, getByText, getByRole } = render(<Home />);
+    
+    // Add a todo
+    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'Todo to Toggle' } });
+    fireEvent.click(getByText('Add Todo'));
+  
+    // Toggle the completion status
+    const checkbox = getByRole('checkbox', { name: 'Mark Todo to Toggle as completed' });
+    fireEvent.click(checkbox);
+    
+    // Check the todo completion status is toggled
+    // This assumes that completed todos have a 'line-through' style
+    const completedTodo = getByText('Todo to Toggle');
+    expect(completedTodo).toHaveStyle('text-decoration: line-through');
+  });
+  
 });
