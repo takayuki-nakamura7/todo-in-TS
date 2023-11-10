@@ -57,21 +57,25 @@ describe('Home', () => {
       expect(queryByText('Todo to Delete')).not.toBeInTheDocument();
     });
   });
+
+  it('edits a todo correctly', async () => {
+    const { getByPlaceholderText, getByText, getByDisplayValue, queryByText } = render(<Home />);
+    
+    // Add a todo
+    fireEvent.change(getByPlaceholderText('Add a new todo...'), { target: { value: 'Todo to Edit' } });
     fireEvent.click(getByText('Add Todo'));
   
-    // Check both todos are added
-    expect(getByText('First Todo')).toBeInTheDocument();
-    expect(getByText('Second Todo')).toBeInTheDocument();
+    // Trigger edit mode (assumes there's a way to do this, e.g., an 'Edit' button)
+    fireEvent.click(getByText('Edit'));
   
-    // Get all delete buttons, assuming the last one is for the 'Second Todo'
-    const deleteButtons = getAllByText('Delete');
-    fireEvent.click(deleteButtons[deleteButtons.length - 1]);
+    // Change the todo text and submit
+    fireEvent.change(getByDisplayValue('Todo to Edit'), { target: { value: 'Edited Todo' } });
+    fireEvent.click(getByText('Save'));
   
+    // Check the todo is updated
     await waitFor(() => {
-      // Now we expect 'Second Todo' to be gone, 'First Todo' should still exist
-      expect(queryByText('Second Todo')).not.toBeInTheDocument();
-      expect(queryByText('First Todo')).toBeInTheDocument();
+      expect(queryByText('Edited Todo')).toBeInTheDocument();
+      expect(queryByText('Todo to Edit')).not.toBeInTheDocument();
     });
-  });
-  
+  });    
 });
