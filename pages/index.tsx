@@ -45,7 +45,7 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <h1>Taka's ToDo App</h1>
+      <h1>Taka ToDo App</h1>
       <input
         type="text"
         value={inputValue}
